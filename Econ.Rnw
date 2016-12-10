@@ -1,0 +1,13 @@
+% !Rnw root = DDR.Rnw
+
+<<Econ, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+@
+
+\part{Example: R for Economics}
+\href{http://cran.r-project.org/web/views/Econometrics.html}
+\href{http://cran.r-project.org/web/views/SocialSciences.html}
+\href{http://cran.r-project.org/web/views/Finance.html}
+\href{http://cran.r-project.org/web/views/TimeSeries.html}
+\href{http://cran.r-project.org/web/views/Optimization.html}
+\href{http://cran.r-project.org/web/views/OfficialStatistics.html}

@@ -1,0 +1,73 @@
+% !Rnw root = DDR.Rnw
+
+<<Sociology, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+@
+
+\part{R for Sociology}
+Sociologists have plenty of ways to benefit from using R.  Along with general \href{http://cran.r-project.org/web/views/SocialSciences.html}{social science packages}, there are packages pertaining to \href{http://cran.r-project.org/web/views/OfficialStatistics.html}{official statistics and survey design}, and graphical modeling including \href{http://cran.r-project.org/web/views/gR.html}{social networks}.  I will provide an example of the latter.
+
+\section{Example}
+For network analysis there are a great many tools in R such as the packages \emph{\textcolor{blue}{sna}}, \emph{\textcolor{blue}{igraph}} and so forth.  As a simple example we can begin with a data matrix, and from it create an adjacency matrix in which a 1 (or more) represents a connection for two observations, and finally plot the network graph.
+
+Let's say we have a data set for 10 individuals and 6 individuals.  First we take a look.
+
+<<sndata, size='footnotesize', message=FALSE, echo=-c(1:3)>>=
+set.seed(1234)
+snData = data.frame(matrix(factor(rbinom(60, 1, .2), labels=c('No', 'Yes')), ncol=6))
+row.names(snData) = c('Yelberton', 'Billy', 'Fred', 'Henrietta', 
+                      'Janie', 'Bertha', 'Willie', 'Iggy', 
+                      'Flozelle', 'Louise')
+colnames(snData) = paste0('V',1:6)
+snData
+@
+
+For our purposes, let's say that if anyone has 'Yes' as a value for a particular variable, then, based on that, individuals are connected to anyone else with a 'Yes', and more so the more variables in which this occurs. Now there various distance metrics we could employ for such data that would only take a single line of code to create an adjacency/distance matrix (e.g. binary distance, Hamming's distance etc.).  For demonstration though, we'll do it ourselves.  
+
+For a moment you might think about how you would go about this in a standard statistics package.  I can imagine your thoughts might take you through a double loop to calculate adjacency, figure out where to store or write out the matrix, do all this as a completely separate enterprise, then bring in your matrix to possibly another specialized package entirely that can better handle such things.  This is an area traditional statistical packages have only recently begun to even offer much regarding, but regardless there would be a number of steps
+
+In the following, I create an object containing all possible pairwise connections among the rows 1 through 10. I then make an empty matrix that will eventually become the adjacency matrix. In one line of code I'm able make the all calculations by implicitly creating my own function that will sum all occasions in which both inputs are 'yes', and this is applied to the object with all the pairwise combinations, whose elements serve as a row index for the original matrix.  I then fill in the lower triangle of the matrix with those values, and as a shortcut, use the dist function (for distance matrices) to fill in the rest.
+
+
+<<adjmat, size='footnotesize', echo=c(1:5,7), R.options=list(width=120)>>=
+pairwise = combn(nrow(snData), 2)
+adjmat = matrix(NA, 10, 10)
+adj = apply(pairwise, 2, function(x) sum(snData[x[1],]=='Yes' & snData[x[2],]=='Yes'))
+adjmat[lower.tri(adjmat)] = adj
+adjmat = as.matrix(as.dist(adjmat, diag=T, upper=T))
+row.names(adjmat) = colnames(adjmat) = c('Yelberton', 'Billy', 'Fred', 'Henrietta', 
+                                          'Janie', 'Bertha', 'Willie', 'Iggy', 
+                                          'Flozelle', 'Louise')
+adjmat
+@
+
+
+\noindent Now we can plot the graph.  The plot shown has some additional arguments added.
+
+
+<<graph, size='footnotesize', eval=F, echo=1:3>>=
+library(igraph)
+g = graph.adjacency(adjmat)
+plot(g)
+g = graph.adjacency(adjmat, mode='undirected', weighted=T, add.rownames=T, diag=F)
+pdf('Figures/networkgraph.pdf', paper='USr')
+par(mar=rep(.1, 4))
+plot(g, vertex.color=scales::muted('red'), vertex.label.color='gray75', vertex.label.cex=.9, vertex.size=25, vertex.frame.color=NA)
+dev.off()
+layout(1)
+@
+\includegraphics[scale=.38]{networkgraph}
+
+
+Note that we were able to not only able to do this efficiently in our code, we never had leave the current R environment, use multiple data files or multiple programs, and we have plenty enough functionality to calculate network metrics and model the network itself.  We also have code that would be trivial to change to other parameters of determining adjacency.
+
+\section{Enhancement}
+What if you want more?  Maybe you want to put an interactive, force-directed graph of the network on your website.  The following code will create the html you need, at which point you can either use it directly as a webpage or embed it in another.  The interactive version is \href{http://www3.nd.edu/~mclark19/misc/demos/network.html}{here}; click to add a name and change the color.
+
+<<d3graph, size='footnotesize', eval=FALSE, echo=1:2>>=
+library(d3Network)
+d3SimpleNetwork(data.frame(get.edgelist(g)), file='network.html')
+d3SimpleNetwork(data.frame(get.edgelist(g)), nodeColour='lightblue', 
+                nodeClickColour='darkred', fontsize=6, file='N:././././www/misc/demos/network.html')
+@
+\includegraphics[scale=.9]{d3network}

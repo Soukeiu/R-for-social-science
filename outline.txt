@@ -1,0 +1,41 @@
+R's rise
+	What it is, programming language, statistical environment
+	nytimes article quote
+
+Social Sciences
+	SocSci specific options
+Political Science
+Psychology
+	Quant program uses R
+	Brain
+	SEM
+Sociology
+	Network analysis
+Econometrics
+	general tools
+Anthropology
+	Compositional analysis	
+Survey
+
+Demonstrations
+Data
+	Basics
+	Wow
+
+Modeling
+	Basics 
+	Wow
+
+Vis
+	Basics
+	Wow
+
+Beyond all that:
+	Dynamic reporting
+	Reproducible research
+	Version control and collaboration
+	Web-based
+	Interactive visualization
+	
+
+	

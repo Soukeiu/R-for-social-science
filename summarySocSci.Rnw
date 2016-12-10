@@ -1,0 +1,15 @@
+% !Rnw root = DDR.Rnw
+
+<<summarySocSci, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+@
+
+\part{Brief Summary}
+At this point we've seen R in action in engaged in typical social science data and methodological activity.  We've also seen that it can be very easy to take the process further, and generally, that's how it is with R.  You get a feel for things, and then realize the potential, take your process further.  It allows for far easier data exploration\sidenote{Let's say you had a list object containing 1000 simulated data sets and you wanted to run a model on each. This would take one line of code in R.  Let's say you wanted to run 1000 separate models on each data set.  Assuming a corresponding list of formulas specifying the models, this too would take one line of code.}, allows one to easily specify and compare the output from alternative models, and use that for visualization.
+
+What might not have been obvious is how easily the different packages work with the objects you create.  The packages might be created by different people, but they work on the same classes of R objects, and so many of them work very much in the same fashion even for quite different goals. But even for different classes of objects, different methods for the same function will produce a different product for an object of a different class.  
+
+One might also make the claim 'Yeah but, you already know R, I couldn't have done those things!'.  And that's where you'd be incorrect.  There is so much information about R on the web and elsewhere with working demonstrations and usable code that you merely have to find who else did something, and tweak it for your own needs\sidenote{For the state naming issue, I hadn't done that before, but in looking for an R function that created state abbreviations, I came acros a stack overflow example.}.  
+
+In the following I'll show how to do common tasks such as import data, get basic descriptive statistics and visuals, and run traditional models.  The point will be to show how easy it is to use R just as you would SAS, SPSS or Stata for common tasks irrespective of discipline or analysis.  For most of those things it would take very little transition time if you've done any programming in another language.
+

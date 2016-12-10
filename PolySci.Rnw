@@ -1,0 +1,135 @@
+% !Rnw root = DDR.Rnw
+
+<<PolySci, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+knit_hooks$set(crop = hook_pdfcrop)
+# knit_hooks$set(par=function(before, options, envir){
+# if (before && options$fig.show!='none') par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3)
+# }, crop=hook_pdfcrop)
+@
+
+\part{R for Political Science}
+A lot of political scientists seem to like Stata, and for good reason, it's simply a good statistical tool.  But what might R offer to a political scientist?  The answer is plenty.
+
+As a starting point Much of political science methodology is based on econometrics, and there is a \href{http://cran.r-project.org/web/views/Econometrics.html}{slew} of packages that would fall within that \href{http://cran.r-project.org/web/views/SocialSciences.html}{realm}.  There are political scientists who have provided specific packages such as \href{http://datascience.iq.harvard.edu/zelig}{Gary King and the IQSS group at Harvard}, the \href{http://pscl.stanford.edu/}{Political Science Computational Lab} at Stanford, and even from the \href{http://mcmcpack.berkeley.edu/}{President of the Society for Political Methodology}.  On the data side one can use a packages such as \href{http://cran.r-project.org/web/packages/WDI/index.html}{WDI} for world bank data, \href{http://cran.r-project.org/web/packages/dvn/index.html}{dvn} for access to the Dataverse Network, and a more recent offering, \href{http://cran.r-project.org/web/packages/psData/index.html}psData, that also looks 
+
+\section{Example}
+Let's provide a political science demonstration.  Recently I was interested in looking at investigating cliques within the congress, and as a starting point we can examine how they vote on bills and where they line up within their party.  Let's say I would like rollcall data from the current House of Representatives and make map that reflects their spatial position in terms \emph{ideal point estimation}.  This is not the place for details but instead merely a place to show how easy it can be to go from something to nothing.
+
+Getting the data from voteview.com and estimating a quick model is easy enough with the \emph{\textcolor{blue}{pscl}} package, which has specific functionality to create a rollcall class object ready for analysis, and the function to do analysis based on MCMC.  I'll choose the last completed legislature, and stick to defaults for ease of presentation.  The default plot is to the right.
+
+\marginnote{\includegraphics[scale=.25]{idealModel}}
+<<rcIdeal, size='footnotesize', message=FALSE, cache=TRUE, results='hide', fig.show='hide', echo=c(1:3, 7)>>=
+library(pscl)
+rc112 = readKH('ftp://voteview.com/hou112kh.ord',
+               desc='112th U.S. House of Representatives')
+idealModel = ideal(rc112) 
+
+# load cache after load('cache//rcIdeal_deeb1bb409bed0a18d6b07a2c7f25c91.RData')
+# pdf('Figures/idealModel.pdf')
+plot(idealModel)
+# dev.off()
+@
+
+The idealModel object has the estimated values for each member of the House.  Now we can create a map that reflects them in geographic space as well.  I downloaded the shapefile from the \href{http://cdmaps.polisci.ucla.edu/}{UCLA political science department}, but know that there is plenty of mapping functionality already available for state, county and even census tract/block level mapping in R. 
+\marginnote{\includegraphics[scale=.25]{initialDistMap}}
+
+<<districtMap0, size='footnotesize', cache=TRUE, echo=1:4, eval=1:2, eval=FALSE>>=
+library(maptools)
+congressDist = readShapePoly('PolySci/districtShapes112/districts112.shp')
+plot(congressDist)
+@
+
+<<districtMap1, size='footnotesize', cache=TRUE, echo=F, eval=TRUE>>=
+library(maptools)
+congressDist = readShapePoly('PolySci/districtShapes112/districts112.shp')
+
+
+pdf('initialDistMap.pdf')
+layout(matrix(c(rep(1,12),  2,2,2,3), nrow=4, byrow=T))
+par(mar=rep(1,4))
+plot(congressDist[!congressDist@data$STATENAME %in% c('Alaska', 'Hawaii'),], border='gray50', lwd=.5)
+plot(congressDist[congressDist@data$STATENAME == 'Alaska',], xlim=c(-179, -130), border='gray50', lwd=.5)
+plot(congressDist[congressDist@data$STATENAME == 'Hawaii',], border='gray50', lwd=.5)
+layout(1)
+dev.off()
+@
+
+Trying to transfer data values onto maps is rarely a straightforward process.  While there are a several issues to contend with, we'll note one particular example I came across.  Within both the map object \texttt{congressDist} and the ideal object \texttt{rc112} I created above resides a data set with district codes.  These match for the most part but we need to create a unique identifier so that, e.g. the first district in each state goes to the correct state.  This can be easily accomplished by creating a new unique identifier that just combines state and district.  Unfortunately the data associated with the map has long form state names, while the roll call data uses abbreviations, so we'll need to find a way around this.
+
+Turns out R has state long form names and abbreviations in its base installation in the objects called \texttt{state.abb} and \texttt{state.name}, and changing from one form to the other in our own data set then becomes easy.  After extracting the rollcall data.frame (\texttt{rcdat}), we can more easily play with it directly, then merge it into the map's data set.
+
+The final map I show drops Alaska and Hawaii for easier inspection. Colors fade to white as they get closer to overall mean of the legislators.  I also add a comparison of party identification for comparison.  One can see, for example, that Democratic representatives (blue) in otherwise Republican states (e.g. in Oklahoma and Arkansas) and regions appear to be drawn more away from their typical party line.
+
+
+%\marginnote{\includegraphics[scale=.25]{idealMap}}
+
+
+<<data2map, size='footnotesize', echo=c(7:8, 12:17, 26:27), fig.width=4, fig.height=4, message=FALSE, cache=TRUE, crop=T>>=
+# str(congressDist@data)
+# str(rc112$legis.data)
+
+rc112$legis.data$ideal = idealModel$xbar
+rcdat = rc112$legis.data
+
+# create a new identifier that combines the state with the 
+rcdat$cd2 = paste0(rcdat$state, rcdat$cd)
+
+rcdat = rcdat[!duplicated(rcdat$cd2),]  # drop duplicates/replacements
+rcdat = rcdat[-1, ] # drop Obama
+
+# do the same for the map data, simultaneously converting the full name to 
+# postal abbreviation
+congressDist@data$cd2 = paste0(state.abb[match(congressDist@data$STATENAME, state.name)], 
+                               congressDist@data$DISTRICT)
+
+# examine and see that they have the same form
+head(cbind(congressDist@data$cd2, rcdat$cd2))
+
+# rcdat$cd2[!(rcdat$cd2 %in% congressDist@data$cd2)]
+# congressDist@data$cd2[!(congressDist@data$cd2 %in% rcdat$cd2)]  # turns out we can change rcdat to zeros
+
+tozeros = rcdat$cd2[!(rcdat$cd2 %in% congressDist@data$cd2)]
+rcdat$cd2[!(rcdat$cd2 %in% congressDist@data$cd2)] = gsub('1', '0', tozeros)
+
+# merge with the map data
+congressDistwithIdeal = merge(congressDist, rcdat)
+
+library(scales); library(ggplot2)
+redblue = ifelse(congressDistwithIdeal@data$ideal>=0, muted('blue'), muted('red'))
+absIdeal = abs(congressDistwithIdeal@data$ideal)
+redblueAlpha = (absIdeal - min(absIdeal)) / (max(absIdeal) -min(absIdeal))
+redblue = alpha(redblue, alpha=redblueAlpha)
+
+# pdf('Figures/idealMap.pdf')
+par(mfrow=c(2,1), mar=rep(1,4))
+plot(congressDistwithIdeal[!congressDistwithIdeal@data$STATENAME %in% c('Alaska', 'Hawaii'), ], 
+     col=c(muted('blue'), muted('red'))[congressDistwithIdeal@data$party][!congressDistwithIdeal@data$STATENAME %in% c('Alaska', 'Hawaii')], bty='n', lty=0)
+plot(congressDistwithIdeal[!congressDistwithIdeal@data$STATENAME %in% c('Alaska', 'Hawaii'), ], 
+     col=redblue[!congressDistwithIdeal@data$STATENAME %in% c('Alaska', 'Hawaii')], bty='n', lty=0)
+layout(1)
+# dev.off()
+@
+
+All told it took about 13 required lines of code\sidenote{Including lines that just load packages, which technically could all be done in one line.} to go from nothing to a point where I was ready for final mapping, and that includes dropping out Obama's and replacement votes a couple other minor manipulations to make the data fully compatible.  I was able to easily extract points of interest from various objects, manipulate multiple data sets and easily bounce back and forth among them, make changes to them on the fly, import map objects immediately ready for visualization and customization, and take the output from completely independent packages to produce a final product.  Also, I have no formal training or background in political science or GIS mapping, though R has allowed me to play with many tools that such disciplines utilize.
+
+\section{Enhancement}
+
+But what if  you want a little more from this? Say you want to grab the last 10 Congresses?  In R you wouldn't need an explicit loop to do this.  The following code would produce a list of 10 rollcall objects, ready for you to examine whichever one you wanted to at anytime.  The first line creates a vector of appropriate urls, the next feeds them to the readKH function.
+
+<<multicongress, size='footnotesize', eval=FALSE>>=
+congress = paste0('ftp://voteview.com/hou', 103:112, 'kh.ord')
+cong103_112 = sapply(congress, readKH, simplify=F)
+@
+
+This takes a few seconds per file, but it's easy to do in parallel with the \emph{\textcolor{blue}{parallel}} package\sidenote{No purchase of a non-crippled version of the software or additional module required.}. If you have your cluster \texttt{clus} setup, just change the second line to the following.
+
+
+<<multicorecongress, size='footnotesize', eval=FALSE>>=
+cong103_112 = parSapply(clus, congress, readKH, simplify=F)
+@
+
+I created at function that takes this approach to get either House or Senate (or both), automatically generates descriptions, can write out the file results, and does the process in parallel to create either a rollcall class object or a binary matrix where 1 is a yes vote and 0 a no vote.   You can examine it \href{https://github.com/mclark--/Miscellaneous-R-Code/blob/master/Other/getRollCall.R}{here}.  On my own machine, it would download and create rollcall objects for all legislatures in about twice the time it takes to download just those 10 using the approach above, plus you'd have the other options available.  It also wouldn't take much to add the model and maps as far as code goes, but the models do take several minutes for the House.
+
+
+

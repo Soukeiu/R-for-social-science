@@ -1,0 +1,42 @@
+% !Rnw root = DDR.Rnw
+
+<<Psych, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+knit_hooks$set(crop = hook_pdfcrop)
+@
+\part{R for Psychology}
+Psychological methodologists jumped on the R bandwagon early, and now have a very wide range of tools to work with from \href{http://cran.r-project.org/web/views/SocialSciences.html}{social sciences} broadly speaking, to \href{http://cran.r-project.org/web/views/Psychometrics.html}{psychometrics} specifically, and others that would be of notable interest such as \href{http://cran.r-project.org/web/views/Multivariate.html}{multivariate analysis}, \href{http://cran.r-project.org/web/views/ExperimentalDesign.html}{experimental design}, \href{http://cran.r-project.org/web/views/MetaAnalysis.html}{meta-analysis}, and even \href{http://cran.r-project.org/web/views/MedicalImaging.html}{brain imaging}.
+
+
+\section{Example}
+I'll start with a latent variable model, as many psychologists use such models to study the underlying constructs they attempt to measure, such as for personality and clinical diagnoses.  To begin, there are a great many tools in the \emph{\textcolor{blue}{psych}} package\sidenote{I use this package frequently for nicely displayed summary statistics and other data exploration.} to engage in exploratory factor analysis, even beyond the standard way most approach such an analysis.  Furthermore, the author of the package provides a freely available online text in \href{http://personality-project.org/revelle.html}{psychometrics}.
+
+I show an example of some data that has 3 underlying factors.  It takes one line to run the model, summarize it or visualize it (latter not shown).  To extract factor scores or loadings for further processing takes no effort at all. 
+
+<<fademo, size='footnotesize', cache=TRUE, message=FALSE, fig.show='hide', eval=-10, echo=-11>>=
+library(psych)
+standardFA = fa(Thurstone, nfactors = 3)
+summary(standardFA)
+fa.diagram(standardFA) # visualize
+
+faScores = factor.scores(Thurstone, standardFA) # extract factor scores
+faLoadings = loadings(standardFA) # extract the loadings
+
+# modified version using my own function is shown.
+cor.plot(standardFA) 
+# corrplot2(t(standardFA$loadings), is.corr=F, cl.pos='n')
+@
+\marginnote{\includegraphics[scale=.375]{loadingPlot}} 
+We can see that most items load nicely on 3 correlated factors, but a couple appear to have slight crossloadings on other factors.  
+
+\section{Enhancement}
+Let's say I wanted to simply explore the possibility of a hierarchical factor structure. This isn't something I'm sold on, I don't necessarily want to get carried away analytically, just explore.  R allows one to do this sort of thing all the time, because it is easy to extract the pieces of model output you would like for further processing, or simply use other functionality and visualization.  
+
+<<omegademo, size='footnotesize', fig.width=10, fig.height=4, eval=F, echo=2>>=
+omega.diagram(omega(Thurstone), sl=F, cex=.5, color.lines=F, col='gray50')
+omega.diagram(omega(Thurstone))
+@
+\includegraphics[scale=.4]{FAHierarchical.pdf}
+
+Other tools in this area include the \emph{\textcolor{blue}{MplusAutomation}} package, which will write out different iterations of an Mplus syntax template, run the files in Mplus, extract the output, and provide the summary of all models, \emph{and you never have to leave the R environment}.  However, now you may not even need Mplus. The \emph{\textcolor{blue}{lavaan}} package provides most of the functionality in Mplus as well as output formatted in the same fashion.
+

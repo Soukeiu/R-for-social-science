@@ -1,0 +1,5 @@
+% !Rnw root = DDR.Rnw
+
+<<Anthro, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+@

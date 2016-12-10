@@ -1,0 +1,32 @@
+\select@language {english}
+\contentsline {part}{Preface}{4}{section*.1}
+\contentsline {section}{My Journey to R}{4}{section*.2}
+\contentsline {part}{R on the Rise}{5}{section*.3}
+\contentsline {section}{R Popularity Summarized}{5}{section*.4}
+\contentsline {part}{Overview of R}{6}{section*.5}
+\contentsline {section}{R is not a stats package}{7}{section*.6}
+\contentsline {part}{R for Political Science}{8}{section*.7}
+\contentsline {section}{Example}{8}{section*.8}
+\contentsline {section}{Enhancement}{11}{section*.9}
+\contentsline {part}{R for Psychology}{11}{section*.10}
+\contentsline {section}{Example}{11}{section*.11}
+\contentsline {section}{Enhancement}{12}{section*.12}
+\contentsline {part}{R for Sociology}{13}{section*.13}
+\contentsline {section}{Example}{13}{section*.14}
+\contentsline {section}{Enhancement}{15}{section*.15}
+\contentsline {part}{Brief Summary}{16}{section*.16}
+\contentsline {part}{Working with Data}{17}{section*.17}
+\contentsline {section}{RData}{18}{section*.18}
+\contentsline {part}{Models}{18}{section*.19}
+\contentsline {part}{Visualization}{23}{section*.20}
+\contentsline {part}{Programming in R}{26}{section*.21}
+\contentsline {section}{Basic Benefits}{27}{section*.22}
+\contentsline {section}{Code Maneuverability}{27}{section*.23}
+\contentsline {section}{Project Management}{28}{section*.24}
+\contentsline {section}{Support for Literate Programming \& Reproducible Research}{28}{section*.25}
+\contentsline {subsection}{Document Production}{28}{subsection*.26}
+\contentsline {subsection}{Web-based Presentation}{29}{subsection*.27}
+\contentsline {subsection}{Version Control}{30}{subsection*.28}
+\contentsline {section}{Functions \& Debugging}{31}{section*.29}
+\contentsline {part}{Summary}{32}{section*.30}
+\contentsfinish 

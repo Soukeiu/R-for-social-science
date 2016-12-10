@@ -1,0 +1,143 @@
+% !Rnw root = DDR.Rnw
+
+<<Programming, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+knit_hooks$set(crop = hook_pdfcrop)
+@
+
+\part{Programming in R}
+Something that would surprise those coming from traditional statistics packages is the fact that it is actually much easier to code in R.  It's already the case that data slicing, dicing, wrangling, cleaning etc. is easier in R because of the flexibility it gets from being a true, object-oriented programming language.  However even the act of coding itself is made easier with RStudio, the integrated development environment for R.  I'll list some features and you can ask yourself if you'd rather program in RStudio or the syntax editor of your statistical package.
+
+\includegraphics[scale=.25]{rstudio}
+
+RStudio
+
+\section{Basic Benefits}
+With RStudio you get various base functions, strings, logicals and so forth highlighted as is common with many syntax editors, which makes reading code notably easier. In addition, RStudio has a searchable history, auto-completes object names, closes all manner of brackets, and closes quotation marks, auto-indents etc. making it far less likely to have, e.g. a left off parenthesis, to break your code.  The auto-indent helps keep loops and so forth tidy and more legible automatically. And finally, it's nice to know you'll never lose anything, as RStudio auto-saves every few seconds.  You can open 10 scripts, not save any of them, close RStudio, open it back up, and it'd all be just as you left it.  Many other core features can be found at \href{http://www.rstudio.com/products/rstudio/features/}{RStudio's website}.
+
+
+\section{Code Maneuverability} Let's say you are staring at 100 lines of code on one of several R scripts you are working on, and your cursor is currently at line 50 and you want to do the following steps: run everything to that line, pop to the console for a quick one-off graph, go back to where you were in the script, open the help file for the function you're currently using, look at the source code for it, run the rest of the code from that line on, switch to the script 3 tabs down, switch back, rerun, what you the last bit of code you ran, switch to the next tab (which is a markdown script), check the spelling and compile the script to pdf or html.  To do this in RStudio would take about 20 keystrokes and no mouse movement at all\sidenote{You can see all the shortcuts in RStudio \href{https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts}{here}}.  This is actually a common sort of capability in IDEs, and you'll find similar functionality in others that are geared toward other programming languages (just not statistical packages).  And for those that don't care much for programming, they should want to spend less time doing it, but my guess is that the easier it is for someone to program the more likely they will start to enjoy it.
+
+
+\section{Project Management}
+RStudio allows one to create projects, which are like self-contained collections of scripts housed in their own directory. Say you're a faculty member and you're working on a book, and have two current research projects.  You could be writing the book in one project that has, for example, separate scripts for each chapter. In another are the analysis scripts pertaining to that research, and the same for your other research endeavor.   You're working on your book when a colleague calls up and asks you to rerun part of an analysis for her.  You simply switch to that project, and RStudio brings up all the scripts you had when you were working on it.  When done you just go back to the book project and it will be as though you never left\sidenote{I'll point out you wouldn't even need the mouse to do this.}.  Furthermore, these projects are capable of being tied to Git or Subversion for version control, making it more easy to collaborate on these projects with colleagues.  You can also have RStudio settings specific to each project, and have package management specific to each project.
+
+
+\section{Support for Literate Programming \& Reproducible Research}
+The time has come for researchers to get more serious about their data, how they produce the results of their research, and conducting analysis in a fashion that is reproducible.  Research results in publication form are almost entirely thought of as a finished product among social scientists, but those days are over.  Better work results from assuming the final product will be dynamic, easily updated, and make it as easy as possible to reproduce the results.One never has to leave the R environment to go from data to journal ready publication, while engaging in best practices for reproducible research. R has long been in this game, as tools like Sweave have been around since the days of S\marginnote{I found it telling that searching for "reproducible research" and "SPSS" has a first link at IBM to calling R from SPSS.}. 
+
+\subsection{Document Production}
+RStudio makes it easy to use R to take your code and analysis and produce high-quality, publish-ready documents, and in a variety of ways.  As mentioned, RStudio takes \LaTeX and with various R tools like the \emph{\textcolor{blue}{knitr}} package, and compiles the text, code and results into a final pdf.  If I were producing a an article based on statistical results, it would be trivial to update the models and thus update results.  The following code uses the \emph{\textcolor{blue}{stargazer}} package write model results out to a file in \LaTeX, using the style of the American Journal of Political Science, which can then be imported directly into the document file.
+
+<<metaLaTeX0, size='footnotesize', cache=FALSE, echo=5:6, cache=TRUE, results='hide'>>=
+set.seed(sample(1000, 4))
+x1 = rnorm(100)
+x2 = rnorm(100)
+y = x1 + x2 + rnorm(100)
+mod = lm(y ~ x1 + x2)
+stargazer::stargazer(mod, out='metaLaTeX.Rnw', style='ajps')
+stargazer::stargazer(mod, out='metaLaTeX.Rnw', style='ajps', font.size='footnotesize', align=T)
+@
+
+\input{metaLaTeX.Rnw}
+
+
+In this way we can always update the document based on new data, discovered bugs, or maybe try enhanced analysis.  The document doesn't have to stay frozen in time with all its possible foibles.  This is something that wasn't possible when print outlets were the primary way to dispense scientific information.  Now the web and digital presentation are not only desired they are assumed.  Now we can think of research articles having version numbers just like software, with relevant updates and enhanced 'features'.
+
+\subsection{Web-based Presentation}
+It might actually be even easier with RStudio to produce a web-ready document.  R has its own flavor of \href{http://daringfireball.net/projects/markdown/}{Markdown}, text-to-HTML conversion tool widely used to produce content for the web.
+
+
+\begin{footnotesize}
+\begin{verbatim}
+---
+title: "MyTitle"
+author: "Me"
+date: "Monday, August 11, 2014"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring 
+HTML, PDF, and MS Word documents. For more details on using R Markdown 
+see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both 
+content as well as the output of any embedded R code chunks within the document. 
+You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent 
+printing of the R code that generated the plot.
+\end{verbatim}
+\end{footnotesize}
+
+\bigskip
+\noindent That code will produce the following webpage.
+\bigskip
+
+\includegraphics[scale=.25]{rmarkdown}
+
+In addition, R can make html5 presentations.  I have an example \href{http://www3.nd.edu/~mclark19/learn/presentation/RI/#1}{here} that I use for my R short course.  So now you can do you research presentations with code and results included as well, and again you've never had to leave the RStudio.  I guess I should mention you can use markdown for MS Word documents, but I haven't yet figured out why one would want to.
+
+\subsection{Version Control}
+Along with all of this, RStudio projects incorporate \href{https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN}{version control}, enabling collaborative research where you don't have to worry about the data, and can easily keep track of changes to data and code, revert if necessary etc.  If you're wondering why you'd need version control, I'll let the following list from \href{http://stackoverflow.com/questions/1408450/why-should-i-use-version-control}{stackoverflow}.
+
+
+\begin{quote}
+Have you ever:
+\begin{itemize}
+  \item Made a change to code, realized it was a mistake and wanted to revert back?
+  \item Lost code or had a backup that was too old?
+  \item Had to maintain multiple versions of a product?
+  \item Wanted to see the difference between two (or more) versions of your code?
+  \item Wanted to prove that a particular change broke or fixed a piece of code?
+  \item Wanted to review the history of some code?
+  \item Wanted to submit a change to someone else's code?
+  \item Wanted to share your code, or let other people work on your code?
+  \item Wanted to see how much work is being done, and where, when and by whom?
+  \item Wanted to experiment with a new feature without interfering with working code?
+\end{itemize}
+
+In these cases, and no doubt others, a version control system should make your life easier. 
+\end{quote}
+
+I'll add that most of those apply to both data and documents as well, and version control works for those just like it does for code.  It's indispensable for collaborations.  You and co-authors can work on documents, data, and analysis without worry, and always know what you're working with.
+
+
+\section{Functions \& Debugging}
+R makes even makes it easy to write your own functions, which can make many operations easier and contributes to reproducibility as well.  But you don't have be an advanced R programmer.  You could simply change the defaults for some function you like to use, for example.  However, in the following we'll demonstrate writing an original function, one that takes 3 inputs (arbitrarily named 'a' 'b' and 'c'), and takes the sum of the first two and multiplies it by the third input.
+
+<<demofunc, size='footnotesize'>>=
+myfunc = function(a, b, c){
+  result = (a + b) * c
+  result
+}
+
+myfunc(1, 2, 3)
+@
+
+Many R functions are quite complex, but yours just has to do what you need to.  You can also do so within other functions implicitly if it's very simple.  The following uses the \texttt{\textcolor{red}{sapply}}, which applies some function to all elements of a vector or list, and in this case we'll make that same calculation to the list elements\sidenote{Some of you may be wondering where the loop is.  In R, it is typically easier, and often clearer, to not use explicit loops.}.
+
+<<demofunc2, size='footnotesize'>>=
+mylist = list(c(1,2,3), c(3,2,1), c(1,1,1))
+
+sapply(mylist, function(listelem) (listelem[1] + listelem[2]) * listelem[3])
+@
+
+
+In this case the implicit function takes a an element from the list (now arbitrarily named listelem), each of which contains three values, and does the same operation as before.  \marginnote{My own rule of thumb is that if I'm using a chunk of similar code more than twice, it's time to write a function that does what the code does.} Unlike other statistical packages where you practically have to be an expert to create and program your own commands to use, or it's simply an otherwise discouraging process, it's pretty easy to do in R, and you'll save a lot of programming time the more you do it.
+
+Furthermore, R and RStudio have a debugging system that makes it easy to spot problems, find time bottlenecks, cycle through all iterations of loops etc.  So for those that get more involved with coding or want to write a complex function, it will likely be a lot easier to do in R.
+
+
+
+

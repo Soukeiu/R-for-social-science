@@ -1,0 +1,111 @@
+\documentclass[english,nohyper,titlepage]{tufte-handout}
+\usepackage[unicode=true,pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+            breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]{hyperref}
+%%% fonts            
+%\usepackage{beramono}
+% \renewcommand*\familydefault{\ttdefault} % in order to have bera as default
+%\usepackage{helvet}
+%\renewcommand*\familydefault{\sfdefault}  % helvetica
+\usepackage{charter}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage[latin9]{inputenc}
+
+\usepackage{color}
+\usepackage{natbib}
+\usepackage[export]{adjustbox}
+\usepackage{babel}
+\usepackage{graphicx}
+
+\usepackage{tabu} % for better tables
+
+\usepackage{amsmath} % for alignment and various
+
+% link color
+\hypersetup{urlcolor= RoyalBlue, citecolor=RedOrange, linkcolor=RedOrange}
+
+%%% title etc.
+\title{\Huge R \& Social Science \\ \noindent \small Getting started with applied use of R in the Social Sciences}
+\author{{\small Michael Clark\\
+         \noindent Center for Social Research\\
+         \noindent University of Notre Dame\\}}
+
+%%% header
+\fancyhf{}% clear previous contents of running heads/feet
+\fancyhead[RE]{\footnotesize{CSR\qquad{} \thepage}}
+\fancyhead[LO]{\footnotesize{\thepage \qquad{}R in the Social Sciences}}
+%\rhead{Bayesian Basics}
+
+%%% remove indent from tables
+% \let\TAB\tabular
+% \renewcommand\tabular{\noindent\TAB}    
+
+\graphicspath{{Figures/}}
+
+\begin{document}
+\maketitle
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Preface}
+\marginnote{Current draft \today{}.}
+\section{My Journey to R}
+
+
+A little background.  While I could go into boring detail, suffice it to say, and as much as it pains me to do so, I was born an SPSS menu-clicker, as far as my stats training goes.  I started making the switch over 10 years ago thanks to an acquaintance who had spent more time in the stats world and was using R.  Unlike SPSS, whose base offering seemed to center around  the content of statistics textbooks of the 1970s, I found that R could easily pull off the modern methods statistically minded individuals in social science and psychology were requesting that applied researchers do.  But it could do a lot more, and the only limiting factor was me.  I never learned a thing about statistics using SPSS, while I was learning something new all the time with R. When I began using it to teach, and despite the students' having the very same grumblings I had about programming, there would actually be light bulbs coming on when they used it.  Again, this isn't something I witnessed with SPSS.  It was also nice to have a tool they and anyone could afford.  Due to R's rise in popularity you can now get a free student, i.e. crippled, version from SPSS, as well as use R code within it's syntax, as well as offering a developer pack so that you can use R to make SPSS better (for a price of course).  If nothing else, \emph{even SPSS's own founder jumped ship to R years ago}, saying "R is an absolutely massive advancement on the kind of analytics I invented. It's an opportunity to change the game in the fastest-growing field in software."\sidenote{I'm not sure what analytics he's referring to as having invented.}.  
+
+R is both free and freeing.  It is not tied down to any particular discipline or industry persuasion.  It is easily modified, expanded, and enhanced.  In short, R is there to do with what you want statistically, and the possibilities are endless.  You will learn more about your data, your models, and about statistics, by programming in R than you would using canned routines in a typical statistics package. Is it perfect? No, no programming language is.  But it will do what you want, and what else really matters aside from that?
+
+While personally I feel the writing was on the wall for applied researchers years ago, the following document will attempt to provide specific reasons for someone else to make a similar switch, particularly those in the social sciences.  By the way, this document was created \emph{with R} in the same environment used for statistical programming\sidenote{Using knitR and other packages, mixed with \LaTeX}.  For other examples you can see my documents here. 
+
+\pagebreak{}
+
+<<Rise, child='Rise.Rnw'>>=
+@
+
+<<Overview, child='Overview.Rnw'>>=
+@
+
+
+<<PolySci, child='PolySci.Rnw'>>=
+@
+
+<<Psych, child='Psych.Rnw'>>=
+@
+
+<<Sociology, child='Sociology.Rnw'>>=
+@
+
+<<summarySocSci, child='summarySocSci.Rnw'>>=
+@
+
+<<Data, child='Data.Rnw'>>=
+@
+
+<<Models, child='Models.Rnw'>>=
+@
+
+<<Visualization, child='Visualization.Rnw'>>=
+@
+
+<<Programming, child='Programming.Rnw'>>=
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Summary}
+Before wrapping things up, let's talk about some of the other things R can do.  These are just some of things that should/would be of interest to any applied social scientist, but are not the sorts of things typically covered in a social science stats course, nor are they easily done or common in statistics packages they normally use.  With R you have a lot of functionality for things like web scraping, machine learning, text analysis, Bayesian estimation, mapping and geospatial modeling, direct access to data repositories, accessing social media streams, the ability to interface with newspaper and journal APIs, and a whole host of tools from other sciences that might be of use for their particular research.  R's audience is very general, and its users build tools to meet their needs and make them available for others.  You will typically have a lot of choice in how you do any particular thing in R modeling or otherwise, unlike other packages for which you may have only one or two commands that don't provide much different content.  It may be overwhelming at first introduction, but it is very freeing.  You'll soon that the question isn't 'Can R do this?', it's 'What package in R does this?'.
+
+
+Hopefully this document will give the SAS, SPSS, Stata etc. users in social science some things to think about.  Those are fine programs in their own right, but unless you are a great programmer with their syntax, using them is less efficient than what you can do with only a basic knowledge of R.  A lot of folks think there is a steep learning curve just to get into R, but for purely applied use of just importing data and running a model, it can be used in pretty much the same way as one does the other statistical packages, so you can pop over to it to do the things your own package doesn't do the way you would like.  But even with purely applied use, there are efficiency gains due to its object-oriented programming features, RData files, R Projects, visualization etc., and the more you get used to it the more you'll get out of your data.  
+
+Modern science is dynamic, interactive, web-based, and reproducible.  R has all the tools you need for modern scientific research in any discipline.  Spend some time at \href{http://www.r-bloggers.com/}{R-bloggers} to see what people are doing with R.  It will make your head spin.  But know that many of them aren't expert programmers or statisticians either, and if they can use R to do those things, you can too.  
+
+
+
+
+\end{document}

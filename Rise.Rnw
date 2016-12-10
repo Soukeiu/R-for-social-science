@@ -1,0 +1,33 @@
+% !Rnw root = DDR.Rnw
+
+<<Rise, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE)
+@
+\part{R on the Rise}
+R's popularity has been meteoric over the past 10 or more years.  But you don't have to take my word for it.  As a starting point we can note a Google trends plot over the past 10 years.  Note that for the following, since there was no special topic for SPSS programming or statistics, or SAS outside of SAS Institute, so their absolute numbers may be inflated by other things (especially SAS), but the absolute values aren't as important for our purposes as the trends.  The only one notably on the rise is R.
+
+\bigskip
+\includegraphics[scale=.35]{trendssmall}
+\bigskip
+
+
+\section{R Popularity Summarized}
+In fact there is a regularly updated \href{http://r4stats.com/articles/popularity/}{website} devoted to the popularity of R, maintained by the author of books that help people to migrate from SAS, SPSS, and Stata\sidenote{I should note that I've never come across a book with a title that goes in the reverse direction.  If you are proficient at R, you have enough programming skill to learn the others, but there is also no need to.}.  I will provide a brief summary\sidenote{Several of these are based on results from two years ago.}.
+
+\begin{description}
+  \item[Job Advertisements] For analytics jobs, R is on the rise while SAS and SPSS are stagnate and other statistical packages aren't even common. You'd be better off with Python than SPSS skills in the modern analytics world.
+  \item[Google Scholar] Not exactly telling as most articles seem to want you to think that their statistics arise magically from the authors' skulls and the tools used are left uncited, but SPSS has simply plummeted in Google scholar hits since 2005, while SAS has lost notable ground since 2008. R, and even  Stata, have gained.
+  \item[Published Books]  R has provided SAS and SPSS a 20 year head start, but has already caught up to SPSS, while SAS is still a ways off.  
+  \item[Website Popularity] R is second only to SPSS in terms of links to its homepage, though really that is a comparison to IBM as IBM.com is SPSS's homepage.  SAS is a distant second, and Stata notably lower than SAS.
+  \item[Blogs]  It's not even remotely close here.  There are 550 blogs currently listed at R-Bloggers.com, while SciPy (Python library) has only a tenth devoted to it, which is still more than SAS and Stata combined.  
+  \item[Discussion Lists] From their own to discussion forums to popular programming sites like CrossValidated, StackOverflow and TalkStats, R dominates. SAS catches up at places like LinkedIn and Quora.  SPSS and Stata are way off the pace.
+  \item[Popularity Measures] Several (obviously limited) surveys at sites like KDNuggets ask big data and analytics folks what tools they're using, and R is again more widely used than traditional statistics packages, followed by SAS and SPSS.  Stata isn't even on the map here.  
+\end{description}
+
+
+\marginnote{R has really become the second language for people coming out of grad school now, and there's an amazing amount of code being written for it. You can look on the SAS message boards and see there is a proportional downturn in traffic. ~ Max Kuhn, associate director of nonclinical statistics at Pfizer in a New York Times article on R from \emph{2009}. }
+There are plenty of bones to pick about trying to assess any of the above outside of a few of the measures, but I think it's safe to say that R is very popular right now.  Companies like Google, aside from general programmers, aren't looking for SPSS and SAS proficiency, they're hiring R programmers. For data driven graphics, the NY times graphics team is using R and other programming languages like JavaScript on the backend, not any other statistical packages\sidenote{See the blog of their Graphics Editor \href{http://chartsnthings.tumblr.com/post/22471358872/sketches-how-mariano-rivera-compares-to-baseballs}{here} and \href{http://chartsnthings.tumblr.com/post/49236510636/charting-skill-and-chance-in-the-n-f-l-draft}{here} for more insight into their process.}.   So if industry is shifting to R and other programming tools, and the statistical community long ago adopted R as their primary tool of choice, it stands to reason applied researchers might want to use it as well, and the fact is a great many of them already are.
+
+In the following I'll show some specific R tools framed within social science applications.  Nowadays it's not uncommon to find someone doing social science research might be a physicist, biologist, or computer scientist, though I have more traditionally trained social scientists in mind.  I'll specifically note a few applications in political science, psychology and sociology.  After that I'll provide specific programming examples to show how easy it is relative to other programs.  Then I'll suggests some additional thoughts that go beyond the standard approaches.
+
+

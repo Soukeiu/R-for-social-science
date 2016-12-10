@@ -1,0 +1,35 @@
+% !Rnw root = DDR.Rnw
+
+<<Data, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+@
+
+\part{Working with Data}
+
+It is no more difficult to get data into R than other programs.  The following offer different ways to read in data in standard formats and from common statistical packages.
+
+<<importData, size='footnotesize', eval=FALSE>>=
+myCsvDatainR = read.csv('mydata.csv')
+myTabDelimDatainR = read.table('mydata.dat')
+
+# for statistical packages
+library(foreign)
+
+mySPSSDatainR = read.spss('mydata.sav')
+myStataDatainR = read.dta('mydata.dta')
+@
+
+Probably one of the most powerful advantages R has over other statistical packages is its indexing capabilities.  To provide an arbitrary but extreme example, I will subset a data set as follows: if the fitted value from a regression (R object \texttt{modlm}) is above 10 and, following that, if Sex is male or their Mood, which is in another data set (mydata2), is 'blue', but only the variables whose name begins with 'Alf' or ends with 'Webster', and we only want to keep the last 10 rows, and finally, we want summary statistics for those that are retained. Note that none of these particular variables are already available except those in the data sets.  Think of the ways in which you might accomplish this in your statistical package of choice.  Mostly it would involve steps to create the fitted values, create the conditional variables, create a variable list, run the initial conditionals, subset to the last 10 rows, and finally run a separate command to summarize the output.  In the following, we're going to do all of this on the fly. 
+
+
+<<subset1, size='footnotesize', eval=FALSE>>=
+subsetData = summary(tail(mydata[fitted(modlm)>10 && mydata$Sex=='male' | mydata2$Mood=='blue', 
+                                 grep('^Alf|Webster$', colnames(mydata))], 10))
+@
+
+\emph{\textbf{One line of code}}.  This would be a bad way to code and not recommended due to clarity, but it serves to illustrate a point, namely \emph{that you can}.  Furthermore, once you get used to these capabilities you end up taking advantage of them in ways you just simply wouldn't have thought to do in other statistical packages because it either wouldn't have been possible or would have been overly difficult.  Once you start doing this, data manipulation and exploration, part and parcel of \emph{initial data analysis}, might actually even be fun.  While you might spend weeks cleaning data using traditional stat packages, you'll already have made new discoveries from venturing down paths you otherwise wouldn't have bothered with due to time constraints.
+
+A student or faculty member that only occasionally uses a statistical package from time to time when they have some data they want to analyze in all likelihood doesn't do enough programming to be overly wed to a statistical package, and this is because they likely don't do a lot of advanced programming anyway.  That said, why not instead use one that will save you time in the long run even if you don't use all of its power?
+
+\section{RData}
+Another efficiency feature R has over other statistical packages is the RData file itself.  When you save your workspace, you aren't just saving a data set, you are able to save \emph{every object you've created}.  When you load the RData file, \emph{you don't even have to rerun any code}. All objects are available, including graphs if saved as objects.  Even if one could program as flexibly in another statistical package, in those you'd always have to reimport data and rerun code to get back to the point you were. R allows you to pick up at the exact point you left off.

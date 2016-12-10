@@ -1,0 +1,192 @@
+% !Rnw root = DDR.Rnw
+
+<<Models, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+knit_hooks$set(crop = hook_pdfcrop)
+@
+
+\part{Models}
+
+Let's start by examining some non-R approaches to the basic modeling case of standard regression.
+\bigskip
+
+\noindent SPSS
+\begin{footnotesize}
+\begin{verbatim}
+regression
+ /dependent science
+ /method = enter math female socst read.
+\end{verbatim}
+\end{footnotesize}
+
+\noindent SAS
+\begin{footnotesize}
+\begin{verbatim}
+proc reg;
+model science = math female socst read;
+run;
+\end{verbatim}
+\end{footnotesize}
+
+\noindent Stata
+\begin{footnotesize}
+\begin{verbatim}
+reg science math female socst read
+\end{verbatim}
+\end{footnotesize}
+
+\noindent R
+\begin{footnotesize}
+\begin{verbatim}
+lm(science ~ math + female + socst + read)
+\end{verbatim}
+\end{footnotesize}
+This is as basic as modeling gets, and maybe it's just me, but as far as code goes, even in this simple setting I think most would prefer the latter two for their legibility and efficiency\sidenote{Though unless you know Stata, you wouldn't necessarily know what model is being run.}. The following are some standard models in the social sciences in R code.
+
+<<Rmodels, size='footnotesize', eval=FALSE>>=
+# standard linear model regression
+lm(y ~ x1 + x2) 
+
+# generalized linear model (poisson)
+glm(y ~ x1 + x2, family='poisson')
+
+# mixed model, random intercept (lme4 package)
+lmer(y ~ x1 + x2 + (1|group))
+
+# generlized mixed model (with a random slope added)
+glmer(y ~ x1 + x2 + (1 + x1|group), family='poisson')
+
+# survival model
+coxph(Surv(time, status) ~ x1 + x2)
+
+# principal components
+princomp(mydata)
+@
+
+Hopefully the general theme is clear.  After data manipulation running a typical model in R is just as or even more easy to do in R, typically one needs to just specify a formula object (i.e. y\textasciitilde x) and note the data (if the variables are not otherwise in the environment).  But let's look at what we might do with a standard regression. The following runs a simple model and shows the results.
+
+<<lm, size='footnotesize', cache=TRUE, echo=-c(1:4), message=FALSE, R.options=list(digits=3)>>=
+library(MASS)
+mydata = data.frame(mvrnorm(250, mu=rep(0,3), Sigma=matrix(c(1,.2,.3,.2,1,0,.3,0,1), 3,3, byrow=T), empirical=T))
+colnames(mydata) = c('y', 'x1', 'x2'); mydata$y = mydata$y+.1
+
+modlm = lm(y ~ x1 + x2, data=mydata)
+summary(modlm)
+@
+
+But it's not enough to merely get results.  Every model must be examined to see how well it fits the data, how tenable assumptions are etc.  It also aids interpretation to see predictive plots and so forth. A set of diagnostic plots is readily available in for many standard models by simply using the \texttt{\textcolor{red}{plot}} function on the lm object.
+
+<<lmResiduals, size='footnotesize', cache=TRUE, echo=-c(1,3), message=FALSE, results='hold'>>=
+par(mfrow= c(2,2))
+plot(modlm, ask=F)
+layout(1)
+@
+
+\noindent Or do it yourself.
+
+<<lmresplot, size='footnotesize', cache=TRUE, out.width='.49\\linewidth'>>=
+plot(modlm$fitted, modlm$residuals)
+@
+
+
+Note that in the first place we have several diagnostics ready to go for all lm, glm, and additive models, as well as many others in various packages. R developers know you need these sorts of things and so make it easy to get, but even then R objects make it easy to extract them for your own purposes.  The following shows everything that can be extracted from the model object such as coefficients, model matrix, residuals etc.  You can extract other things from the summary object (not shown).
+
+<<lmObject, size='tiny', eval=1, results='hold'>>=
+str(modlm)
+str(summary(modlm))
+@
+
+
+Prediction is straightforward, and works the same in many modeling packages.  Again, R developers know this is part and parcel of statistical analysis, and it is made easy for standard models, and most modeling packages take the same approach.  In the following we merely have to tell it what values of the explanatory variables you want to use\sidenote{If you didn't you'd just be duplicating the fitted values.}.  Here we look at x1 values from -1 to 1, keeping x2 at its 90th percentile.  Note that we aren't explicitly creating new x1 or x2 variables, though it would be better form to create a separate 'newdata' object
+
+
+<<lmPredict, size='footnotesize', message=FALSE, warning=FALSE>>=
+predict(modlm, data.frame(x1=seq(-1,1, by=.25), x2=quantile(mydata$x2, p=.9)))
+@
+
+\noindent Here are some examples of other typical modeling exercises.
+
+<<lmOther, size='footnotesize', eval=FALSE>>=
+# interactions (including main effects)
+lm(y ~ x1*x2)
+
+# dealing with categorical factors; nothing special needed
+lm(y ~ f1 + x2)
+
+# transform a variable on the fly; no need to explicitly create the variables if
+# you don't want to. The last one creates a logical variable that's true if x is
+# greater than 5.
+lm(log(y) ~ sqrt(x1) + x2>5)
+
+# add a predictor
+update(modlm, ~. + x3)
+
+# model comparsion
+anova(mod1, mod2)
+
+# automatic model comparison of added or dropped terms
+drop1(modlm, ~ x2, test='Chisq')
+add1(modlm, ~ x1*x2, test='Chisq')
+
+# y predicted by all other variables
+lm(y ~ .)
+
+# write out results to latex (xtable package)
+xtable(summary(modlm))
+@
+\marginnote{\includegraphics[scale=.35, center]{coefCorrplot}}
+
+Let's say as a precursor to a mixed model, you want to run separate regressions on the levels of the grouping factor within which observations are nested.  Furthermore, you want to make a graph that reflects the coefficients values, fading them out and make them smaller as they tend toward zero.  First think about the steps you'd have to take in your own package, then note that this technically can be a one line operation in R\sidenote{For visualization purposes only, I scale the matrix of coefficients so that they can be on equal visual footing. The purpose here would never be for inference.}. The plot is shown to the right with additional options specified, and further down to it I show a similar plot, which looks at model for two dependent variables and 46 countries.
+
+\marginnote{\includegraphics[scale=.30, center]{"Color as Tile"}}
+<<lmList, size='footnotesize', message=FALSE, eval=F, echo=c(2:3)>>=
+mydata$g = factor(rep(1:25, e=10))
+library(lme4); library(corrplot)
+corrplot(scale(coef(lmList(y ~ x1 + x2 | g, mydata))), is.corr=F)
+
+library(scales)
+coefs = scale(coef(lmList(y ~ x1 + x2 | g, mydata)))
+colnames(coefs)[1] = 'Intercept'
+pdf('Figures/coefCorrplot.pdf')
+corrplot(coefs, is.corr=F, method='color', 
+         addgrid.col='white', tl.col='gray50', cl.ratio=1, cl.pos='r', 
+         cl.align.text='l', cl.cex=.5, col=div_gradient_pal()(seq(0, 1, length = 100)))
+dev.off()
+
+gd = data.frame(g=factor(rep(1:25, 3)),melt(coef(lmList(y ~ x1 + x2 | g, mydata))))
+ggplot(aes(x=variable, y=g), data=gd[gd$variable != '(Intercept)',]) + 
+  geom_tile(aes(fill=value), width=3) +
+  scale_fill_gradient2() +
+  facet_grid(~variable, scales='free') +
+  ggtheme
+@
+
+It's assumed if folks could do this sort of thing easily in other statistical packages they would be doing so.  R users by contrast are doing things like this all the time as standard practice, and R allows them to take their models further much more easily. Now let's look at some other advanced models.
+
+<<RAdvmodels, size='footnotesize', eval=FALSE>>=
+# multiple regressions, same predictors
+lm(cbind(y1, y2, y3) ~ x1 + x2)
+
+# generalized additive model (mgcv package)
+gam(y ~ s(x1) + s(x2))
+
+# mixtures of regessions (flexmix package)
+flexmix(y ~ x1 + x2, k=3)
+
+# bayesian regression (bayesglm package)
+bayesglm(y ~ x1 + x2, family='poisson') 
+
+# optimization with likelihood function
+lmLL = function(par){
+  beta = par[-1]
+  sigma = par[1]
+  mu = X%*%beta
+  -sum(dnorm(y, mu, sigma, log=T))
+}
+optim(par=startingvalues, fun=lmLL)
+
+# classical time series
+arima(y, order=c(0, 1, 1))
+@
+
+You get the picture.  Modeling is as easy in R as it would be in other packages, if not easier in many cases. In addition, you get access to more models and more flavors of the models\sidenote{As an example, the \texttt{\textcolor{red}{ols}} in the \emph{\textcolor{blue}{Hmisc}} package would do even more for your standard regression (and logistic,s survival and other) models.}, not to mention various approaches that are at the cutting edge of statistical science.  Furthermore, you can simply do more with your model results once you have them.  Users of other statistical packages are stuck with  older approaches, commands that won't work if you try to use them in any nonstandard fashion, and modeling functions for which one has no way to see what the commands are actually doing.  

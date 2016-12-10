@@ -1,0 +1,86 @@
+% !Rnw root = DDR.Rnw
+
+<<Visualization, cache=FALSE, include=FALSE>>=
+opts_knit$set(self.contained=FALSE, keep.blank.lines=TRUE, width=100)
+knit_hooks$set(crop = hook_pdfcrop)
+knit_hooks$set(rgl = hook_rgl)
+@
+
+\part{Visualization}
+
+I'm not going to talk a lot about visualization in R, it's been ahead of other statistics packages in that department at least since version 1.0\sidenote{Look at \href{http://www.r-project.org/}{R's homepage}, this plot is over 10 years old, and would still be impossible for most statistics packages (code available if you click on the image at the website).
+\includegraphics[scale=.25]{rhome}}. Admittedly traditional statistics packages have finally started to make gains in this area in recent years, but even as they do R continues to move the goalposts.
+
+I will show how easy it is to get standard plots, but it's more or less a waste of R's capabilities if this is all you want to use it for.
+
+<<basicvis, size='footnotesize', echo=8:11, cache=TRUE>>=
+set.seed(1234)
+x = rnorm(100)
+y = x + x^2 + rnorm(100)
+g = factor(rep(1:10, 10))
+d = rmultinom(100, 3, prob=c(1,2,3))
+
+par(mfrow=c(2,2))
+barplot(table(d))
+plot(x, y)
+stripchart(x ~ g, col=rainbow(10), pch=20)
+hist(x)
+layout(1)
+@
+
+For one, these convey too little information.  You don't need a visualization for something you can describe in a short sentence. \emph{But even if this is all you're doing visually}, you'd still be better off in R because you would have fine control over every aspect of the plot and be able to tweak anything about it that you'd want to.  
+
+But let's stick with standard plots and show how easy it is to get something better. As an example I'll show a scatterplot using the car package.
+
+<<carDemo, size='footnotesize', cache=TRUE, out.width='.49\\linewidth', fig.align='center'>>=
+library(car)
+scatterplot(x, y, ellipse=T)
+@
+
+With no additional coding effort you have an enhanced scatterplot, a smooth and linear function imposed on it, a data concentration ellipse based on a bivariate normal distribution, univariate boxplots in the margins, and the ability to identify points of interest interactively.  It actually would take little effort to reproduce most of the scatterplot with the ggplot2 package or even the base R plotting capabilities.
+
+<<ggCarScatter, size='footnotesize', echo=2:7, eval=1:11, cache=TRUE, message=FALSE, out.width='.49\\linewidth', fig.show='hold'>>=
+gd = data.frame(x,y, f=factor(1))
+library(ggplot2)
+ggplot(aes(x, y), data=gd) +
+  geom_point() +
+  geom_smooth(col='red', se=T) +
+  geom_smooth(col='lightgreen', method='lm', se=F) +
+  theme_minimal()
+
+plot(x, y, pch=19)
+abline(lm(y~x), col='lightgreen')
+lines(data.frame(x, predict(loess(y~x)))[order(x),], col='red')
+
+box1 = qplot(f, x, geom='boxplot', data=gd) + theme_minimal()
+box2 = qplot(f, y, geom='boxplot', data=gd) + theme_minimal() + coord_flip()
+g = ggplot(aes(x, y), data=gd) +
+  geom_point() +
+  geom_smooth(col='red', se=T) +
+  geom_smooth(col='lightgreen', method='lm', se=F) +
+  theme_minimal()
+
+grid.arrange(box1, g, box2, ncol=2, widths=c(1,3), heights=c(3,1), respect=T)
+@
+
+
+\noindent Maybe you want a 3d scatterplot with a with smooths for different groups?  Again this is one line of code.
+
+<<scatter3d, size='footnotesize', echo=1, eval=FALSE, cache=TRUE, message=FALSE, rgl=T>>=
+scatter3d(y ~ x1 + x2 | x0, data=d, fit='additive')
+library(car); library(mgcv)
+z = x + y + rnorm(100)
+g = factor(x>0 & z >0)
+d = gamSim(5)
+scatter3d(y ~ x1 + x2, data=d, fit='additive', ellipsoid=T, grid=F, col=gg_color_hue(length(levels(d$x0))))
+scatter3d(y ~ x1 + x2 | x0, data=d, fit='additive', col=gg_color_hue(length(levels(d$x0))), grid=F, ellipsoid=F)
+@
+\includegraphics[scale=.25]{gam3d}
+
+I provide the above examples not to show that R can do this or that visualization while statistical packages can't.  The point is not that other statistical packages can't do the same kinds of visualizations you want, although that is sometimes, if not often, going to be the case.  It's just going to typically be easier, often much easier, in R to get far better versions of standard plots, so that you'll be spending most of your time tweaking the visualization you actually wanted to get it just the way you want it, rather than fighting with a program that hasn't put much relative effort into visualization and in the end eventually settling on whatever it gives you.
+
+
+For a comparison I looked up "'statistics package' visualization" and the results are as follows.  SAS, has an \href{http://www.sas.com/en_us/insights/big-data/data-visualization.html}{unnecessarily shaded bar plot} as the first thing it shows regarding its visualization module.  SPSS as usual wants you to pay for this capability, and its \href{http://www-03.ibm.com/software/products/en/spss-viz-designer}{screenshots} suggest it's way too much.  I couldn't find much on the topic with Stata that actually showed much beyond the standard graphics, and in any case it has never been known for its prowess there.  Honestly, you'd be better of using other visualization-specific tools freely available on the web even if you were wed to SAS, SPSS, Stata etc.  But as a comparison, here are the sorts of things R visualization entails- \href{http://shiny.rstudio.com/gallery/}{shiny}, \href{http://ggvis.rstudio.com/interactivity.html}{ggvis}.  Modern visualization must be interactive and web ready to go along with producing high quality static graphics, and R has tools ready for you to go there.
+
+
+

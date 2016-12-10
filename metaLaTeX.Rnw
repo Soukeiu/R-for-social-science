@@ -1,0 +1,27 @@
+
+% Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Mon, Aug 11, 2014 - 5:18:36 PM
+% Requires LaTeX packages: dcolumn 
+\begin{table}[!htbp] \centering 
+  \caption{} 
+  \label{} 
+\footnotesize 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} } 
+\\[-1.8ex]\hline \\[-1.8ex] 
+\\[-1.8ex] & \multicolumn{1}{c}{\textbf{y}} \\ 
+\hline \\[-1.8ex] 
+ x1 & 0.867^{***} \\ 
+  & (0.105) \\ 
+  x2 & 1.024^{***} \\ 
+  & (0.099) \\ 
+  Constant & 0.135 \\ 
+  & (0.096) \\ 
+ N & \multicolumn{1}{c}{100} \\ 
+R-squared & \multicolumn{1}{c}{0.633} \\ 
+Adj. R-squared & \multicolumn{1}{c}{0.625} \\ 
+Residual Std. Error & \multicolumn{1}{c}{0.951 (df = 97)} \\ 
+F Statistic & \multicolumn{1}{c}{83.610$^{***}$ (df = 2; 97)} \\ 
+\hline \\[-1.8ex] 
+\multicolumn{2}{l}{$^{***}$p $<$ .01; $^{**}$p $<$ .05; $^{*}$p $<$ .1} \\ 
+\end{tabular} 
+\end{table} 

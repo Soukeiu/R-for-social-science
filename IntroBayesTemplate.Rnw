@@ -1,0 +1,126 @@
+\documentclass[english,nohyper,titlepage]{tufte-handout}
+\usepackage[unicode=true,pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+            breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]{hyperref}
+%%% fonts            
+%\usepackage{beramono}
+% \renewcommand*\familydefault{\ttdefault} % in order to have bera as default
+%\usepackage{helvet}
+%\renewcommand*\familydefault{\sfdefault}  % helvetica
+\usepackage{charter}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage[latin9]{inputenc}
+
+\usepackage{color}
+\usepackage{natbib}
+\usepackage{adjustbox}
+\usepackage{babel}
+\usepackage{graphicx}
+
+\usepackage{tabu} % for better tables
+
+\usepackage{amsmath} % for alignment and various
+
+% link color
+\hypersetup{urlcolor= RoyalBlue, citecolor=RedOrange, linkcolor=RedOrange}
+
+%%% title etc.
+\title{\Huge Bayesian Basics \\ \noindent \small A conceptual introduction with application in R and Stan}
+\author{{\small Michael Clark\\
+         \noindent Center for Social Research\\
+         \noindent University of Notre Dame\\}}
+
+%%% header
+\fancyhf{}% clear previous contents of running heads/feet
+\fancyhead[RE]{\footnotesize{Bayesian Basics\qquad{} \thepage}}
+\fancyhead[LO]{\footnotesize{\thepage \qquad{}Bayesian Basics}}
+%\rhead{Bayesian Basics}
+
+%%% remove indent from tables
+% \let\TAB\tabular
+% \renewcommand\tabular{\noindent\TAB}    
+
+\graphicspath{{figure/}}
+
+\begin{document}
+\maketitle
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Preface}
+\marginnote{Initial draft posted 2014 Summer.  Current draft \today{}.}
+The following serves as a practical and applied introduction to Bayesian estimation methods for the uninitiated. The goal is to provide just enough information in a brief format to allow one to feel comfortable exploring Bayesian data analysis for themselves, assuming they have the requisite context to begin with. Roughly the idea is to cover a similar amount of material as one would with one or two afternoons in a standard statistics course in various applied disciplines, where statistics is being introduced in general.  
+
+After a conceptual introduction, a fully visible by-hand example is provided using the binomial distribution.  After that the document proceeds to introduce fully Bayesian analysis with the standard linear regression model, as that is the basis for most applied statistics courses and is assumed to be most familiar to the reader.  Model diagnostics, model enhancements, and additional modeling issues are then explored.  Supplemental materials provide more technical detail if desired, and include a maximum likelihood refresher, overview of programming options in Bayesian analysis, the same regression model using BUGS and JAGS, and code for the model using the Metropolis-Hastings and Hamiltonian Monte Carlo algorithms.
+
+Prerequisites include a basic statistical exposure such as what would be covered in typical introductory social or other applied science statistics course. At least some familiarity with R is necessary, and one may go through my introductory \href{https://www.nd.edu/~mclark19/learn/Introduction_to_R.pdf}{handout} to acquire enough knowledge in that respect.  However, note that for the examples here, at least part of the code will employ some Bayesian-specific programming language (e.g. Stan, BUGS, JAGS).  No attempt is made to teach those languages though, as it would be difficult to do so efficiently in this more conceptually oriented setting.  As such, it is suggested that one follow the code as best they can, and investigate the respective manuals, relevant texts, etc. further on their own.  Between the text and comments within the code it is hoped that what the code is accomplishing will be fairly clear.
+
+This document relies heavily on \citet{gelman_bda}, which I highly recommend.  Other sources used or particularly pertinent to the material in this document can be found in the references section at the end.  It was created using the \href{http://yihui.name/knitr/}{knitr} package within RStudio.  The layout used allows for visuals and supplemental information to be placed exactly where they should be relative to the text. For plots, many of them have been made intentionally small to allow for this, but one can zoom in on them without loss of clarity.
+
+\pagebreak{}
+
+<<introduction, child='introduction/introduction.Rnw'>>=
+@
+
+<<binomial, child='binomial/binomial.Rnw'>>=
+@
+
+<<models, child='models/models.Rnw'>>=
+@
+
+<<diagnostics, child='diagnostics/diagnostics.Rnw'>>=
+@
+
+<<modelEnhancements, child='enhancements/modelEnhancements.Rnw'>>=
+@
+
+<<issues, child='issues/issues.Rnw'>>=
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Summary}
+Hopefully this document has provided a path toward easing into Bayesian analysis for those that are interested but might not have had the confidence or particular skill set that many texts and courses assume.  Conceptually, Bayesian inference can be fairly straightforward, and inferentially is more akin to the ways people naturally think about probability.  Many of the steps taken in classical statistical analysis are still present, but have been enriched via the incorporation of prior information, a more flexible modeling scheme, and the ability to enrich even standard analyses with new means of investigation.
+
+Of course it will not necessarily be easy, particularly for complex models, though such models might actually be relatively easier in the classical framework.  While not necessary for all models, oftentimes the process will involve a more hands-on approach.  However this allows for more understanding of the model and its results, and gets easier with practice just like anything else.
+
+You certainly don't have to abandon classical and other methods either.  Scientific research involves applying the best tool for the job, and in some cases the Bayesian approach may not be the best fit for a particular problem.  But when it is, it's hoped you'll be willing to take the plunge, and know there are many tools and a great community of folks to help you along the way.
+
+\bigskip
+
+\noindent Best of luck with your research!
+
+\pagebreak
+<<appendix, child='appendix/appendix.Rnw'>>=
+@
+
+
+
+\pagebreak
+\noindent Aside from Gelman's BDA3 which served as the primary source for the document content, the following list includes others that were either used as additional references, for code examples, etc., or those that might be useful or interesting to the audience for which this document is intended.  Not even a remote attempt is made at a list of essential Bayesian references.
+
+\bibliography{BayesBasics}
+\bibliographystyle{apa}
+
+\bigskip\bigskip
+
+\nocite{albert_bayesian_2009}
+\nocite{bugsbook}
+\nocite{gelman_arm}
+\nocite{gelman_bda}
+\nocite{kruschke_doing_2010}
+\nocite{jeff_gill_bayesian_2008}
+\nocite{simon_jackman_bayesian_2009}
+\nocite{scott_lynch_2007}
+\nocite{mcgrayne_theory_2012}
+
+
+
+\noindent I might also mention the \href{https://groups.google.com/d/forum/stan-users}{Stan users group} as an excellent resource for ideas and assistance for using Stan.
+
+\end{document}

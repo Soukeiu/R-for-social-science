@@ -1,2 +1,3 @@
 # R-for-social-science
-Hastily put together document with social science oriented demos of R.
+
+Raw files for a hastily put together document with social science oriented demos of R. [link](http://m-clark.github.io/docs/RSocialScience.pdf)
